@@ -61,3 +61,23 @@ Respuesta esperada:
   "provider": "anthropic"
 }
 ```
+
+## Validacion automatica (CI)
+
+El workflow en [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) se ejecuta en cada push
+y pull request, y corre dos scripts:
+
+- [`scripts/validate_structure.sh`](./scripts/validate_structure.sh): verifica que existan todos
+  los archivos y carpetas requeridos por la arquitectura del proyecto (routers, services,
+  context, config, etc.) y que `.env` no este versionado.
+- [`scripts/validate_service.sh`](./scripts/validate_service.sh): levanta el servicio con
+  `uvicorn`, y valida que `GET /health` responda `200`, que el endpoint `POST /api/v1/estimate`
+  este registrado en el schema OpenAPI, y que `/docs` (Swagger) responda. No requiere API keys
+  reales, por lo que corre igual en CI sin secretos configurados.
+
+Para correrlos localmente:
+
+```bash
+./scripts/validate_structure.sh
+./scripts/validate_service.sh
+```

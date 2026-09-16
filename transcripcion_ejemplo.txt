@@ -1,0 +1,22 @@
+Transcripcion de reunion - Cliente: Marketing Team S.A.C.
+Fecha: reunion de descubrimiento de proyecto
+
+Participantes: Gerente de Marketing (cliente), Product Manager (agencia)
+
+---
+
+En la reunion con el equipo de marketing, el cliente explico que necesita una landing page
+con formulario de contacto, integracion con su CRM actual (HubSpot), y una seccion de blog
+con editor WYSIWYG. El plazo ideal seria tenerlo listo en 4 semanas. El diseno ya existe en
+Figma y fue aprobado por el equipo de marca la semana pasada.
+
+El cliente menciono que el formulario de contacto debe validar el formato de email y numero
+de telefono antes de enviar los datos a HubSpot via su API. Tambien pidio que los leads que
+lleguen por el formulario disparen automaticamente una secuencia de nurturing en HubSpot.
+
+Sobre el blog, el cliente quiere que su equipo de contenido (sin conocimientos tecnicos) pueda
+publicar articulos, subir imagenes y programar publicaciones futuras sin depender del equipo
+de desarrollo. No es necesario un sistema de comentarios en esta primera fase.
+
+No se requiere pasarela de pagos ni autenticacion de usuarios finales, ya que la landing page
+es de acceso publico. El hosting y dominio ya estan resueltos por el cliente.

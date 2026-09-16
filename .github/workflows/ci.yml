@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  validate:
+    name: Validar estructura y servicio
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      - name: Instalar Python
+        run: uv python install 3.11
+
+      - name: Instalar dependencias
+        run: uv sync
+
+      - name: Validar estructura de carpetas
+        run: ./scripts/validate_structure.sh
+
+      - name: Validar que el servicio levante y responda
+        run: ./scripts/validate_service.sh
