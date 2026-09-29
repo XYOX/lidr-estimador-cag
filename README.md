@@ -61,3 +61,15 @@ Respuesta esperada:
   "provider": "anthropic"
 }
 ```
+
+## Interfaz conversacional (Streamlit)
+
+```bash
+uv run streamlit run streamlit_app.py
+```
+
+Abre una interfaz de chat donde puedes pegar la transcripcion de una reunion y ver la estimacion
+generada en streaming. Reutiliza directamente `app/services/llm_service.py` (mismo system prompt
+y contexto CAG que el endpoint), por lo que requiere el mismo `.env` configurado. El panel lateral
+muestra el system prompt activo, los ejemplos de contexto estatico y las metricas (modelo, tokens
+de entrada/salida, tiempo de respuesta) de la ultima llamada.
