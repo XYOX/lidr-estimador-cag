@@ -12,3 +12,8 @@ dependencies = [
     "anthropic>=0.39.0",
     "streamlit>=1.64.0",
 ]
+
+[dependency-groups]
+dev = [
+    "watchdog>=6.0.0",
+]
