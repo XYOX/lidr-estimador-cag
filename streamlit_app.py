@@ -25,8 +25,8 @@ OUTPUT_FORMAT_LABELS = {
     OutputFormat.NARRATIVE: "Narrativo",
 }
 
-st.set_page_config(page_title="Estimador CAG", page_icon="🧮")
-st.title("🧮 Estimador de Software (CAG)")
+st.set_page_config(page_title="Estimador CAG")
+st.title("Estimador de Software (CAG)")
 st.caption(
     "Describe el proyecto y elige los parametros de la estimacion. El formulario envia un "
     f"`EstimationRequest` por POST a `{API_BASE_URL}/estimate`."
