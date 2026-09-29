@@ -5,6 +5,8 @@ from app.context.examples import ESTIMATION_EXAMPLES
 
 
 def get_system_prompt() -> str:
+    # API publica para consumidores externos (ej. streamlit_app.py); _build_system_prompt
+    # queda como detalle interno del modulo.
     return _build_system_prompt()
 
 
