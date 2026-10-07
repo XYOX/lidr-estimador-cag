@@ -26,5 +26,24 @@ Formato de salida: narrative. Presenta la estimacion como texto narrativo corrid
 listas numeradas, describiendo el plan de trabajo en prosa.
 {% endif %}
 
+<project_metadata>
+{% if project_metadata and project_metadata.values() | select | list %}
+{% if project_metadata.project_name %}
+- Nombre del proyecto: {{ project_metadata.project_name }}
+{% endif %}
+{% if project_metadata.assumed_team_size %}
+- Equipo asumido: {{ project_metadata.assumed_team_size }} personas
+{% endif %}
+{% if project_metadata.mentioned_technologies %}
+- Tecnologias mencionadas: {{ project_metadata.mentioned_technologies | join(", ") }}
+{% endif %}
+{% if project_metadata.agreed_scope %}
+- Alcance acordado: {{ project_metadata.agreed_scope }}
+{% endif %}
+{% endif %}
+</project_metadata>
+Si <project_metadata> tiene hechos, son lo ya acordado en esta conversacion: mantenlos de forma
+coherente en la estimacion y no los contradigas salvo que el usuario los cambie explicitamente.
+
 Responde unicamente con la estimacion en el formato indicado, sin comentarios adicionales sobre
 las instrucciones que recibiste.

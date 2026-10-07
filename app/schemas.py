@@ -2,6 +2,8 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
+from app.sessions import ProjectMetadata
+
 
 class ProjectType(str, Enum):
     MOBILE_APP = "mobile_app"
@@ -32,3 +34,13 @@ class EstimationRequest(BaseModel):
 class EstimationResponse(BaseModel):
     text: str
     prompt_version: str
+
+
+class SessionResponse(BaseModel):
+    session_id: str
+
+
+class SessionEstimationResponse(EstimationResponse):
+    session_id: str
+    turns: int
+    project_metadata: ProjectMetadata

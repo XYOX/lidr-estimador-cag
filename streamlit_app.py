@@ -28,22 +28,48 @@ OUTPUT_FORMAT_LABELS = {
 st.set_page_config(page_title="Estimador CAG")
 st.title("Estimador de Software (CAG)")
 st.caption(
-    "Describe el proyecto y elige los parametros de la estimacion. El formulario envia un "
-    f"`EstimationRequest` por POST a `{API_BASE_URL}/estimate`."
+    "Pega la transcripcion, adjunta documentos (PDF / Word) y elige los parametros. Se envia como "
+    f"multipart a `{API_BASE_URL}/sessions/{{session_id}}/estimate`."
 )
 
-if "history" not in st.session_state:
+
+
+def new_conversation() -> None:
+    """Crea una sesion en el servicio y resetea el estado local."""
+    response = requests.post(f"{API_BASE_URL}/sessions", timeout=10)
+    response.raise_for_status()
+    st.session_state.session_id = response.json()["session_id"]
     st.session_state.history = []
-if "last_response" not in st.session_state:
     st.session_state.last_response = None
+    st.session_state.project_metadata = {}
+
+
+if "session_id" not in st.session_state:
+    try:
+        new_conversation()
+    except requests.exceptions.RequestException as exc:
+        st.error(f"No se pudo crear la sesion en el servicio IA: {exc}")
+        st.stop()
 
 with st.sidebar:
     st.header("Servicio IA")
-    st.caption(f"Endpoint: `{API_BASE_URL}/estimate`")
+    st.caption(f"Sesion: `{st.session_state.session_id}`")
+    if st.button("Nueva conversacion"):
+        try:
+            new_conversation()
+        except requests.exceptions.RequestException as exc:
+            st.error(f"No se pudo crear la sesion: {exc}")
+        else:
+            st.rerun()
+
+    st.header("project_metadata")
+    st.caption("Memoria del proyecto: vive aparte del historial y se inyecta en el system prompt.")
+    st.json(st.session_state.project_metadata or {})
 
     st.header("Ultima respuesta")
     last = st.session_state.last_response
     if last:
+        st.metric("Turnos en memoria", last.get("turns", "-"))
         st.metric("Version de prompt", last.get("prompt_version", "-"))
         elapsed = last.get("elapsed")
         if elapsed is not None:
@@ -53,9 +79,12 @@ with st.sidebar:
 
 with st.form("estimation_form"):
     description = st.text_area(
-        "Descripcion del proyecto",
-        placeholder="Describe el proyecto de software a estimar (minimo 20 caracteres)...",
+        "Transcripcion",
+        placeholder="Pega la transcripcion de la reunion (minimo 20 caracteres)...",
         height=180,
+    )
+    uploads = st.file_uploader(
+        "Adjuntos (PDF o Word)", type=["pdf", "docx"], accept_multiple_files=True
     )
     project_type = st.selectbox(
         "Tipo de proyecto",
@@ -79,15 +108,21 @@ if submitted:
         st.error("La descripcion debe tener al menos 20 caracteres.")
     else:
         payload = {
-            "description": description,
+            "transcript": description,
             "project_type": project_type.value,
             "detail_level": detail_level.value,
             "output_format": output_format.value,
         }
+        files = [("attachments", (u.name, u.getvalue(), u.type)) for u in uploads]
         with st.spinner("Generando estimacion..."):
             start = time.perf_counter()
             try:
-                response = requests.post(f"{API_BASE_URL}/estimate", json=payload, timeout=60)
+                response = requests.post(
+                    f"{API_BASE_URL}/sessions/{st.session_state.session_id}/estimate",
+                    data=payload,
+                    files=files,
+                    timeout=120,
+                )
                 response.raise_for_status()
                 data = response.json()
             except requests.exceptions.RequestException as exc:
@@ -96,12 +131,18 @@ if submitted:
 
         if data:
             elapsed = time.perf_counter() - start
-            st.session_state.history.append({"request": payload, "response": data})
+            st.session_state.history.append(
+                {"request": payload, "attachments": [u.name for u in uploads], "response": data}
+            )
+            st.session_state.project_metadata = data["project_metadata"]
             st.session_state.last_response = {**data, "elapsed": elapsed}
+            st.rerun()  # refresca el panel lateral (el sidebar ya se dibujo con el estado previo)
 
 for turn in st.session_state.history:
     with st.chat_message("user"):
-        st.markdown(turn["request"]["description"])
+        st.markdown(turn["request"]["transcript"])
+        if turn["attachments"]:
+            st.caption("Adjuntos: " + ", ".join(turn["attachments"]))
         st.caption(
             f"{PROJECT_TYPE_LABELS[ProjectType(turn['request']['project_type'])]} · "
             f"{DETAIL_LEVEL_LABELS[DetailLevel(turn['request']['detail_level'])]} · "

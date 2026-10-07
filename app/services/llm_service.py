@@ -3,21 +3,18 @@ import time
 from app.config import settings
 
 
-def _call_openai(system: str, user: str) -> str:
+def _call_openai(system: str, messages: list[dict]) -> str:
     from openai import OpenAI
 
     client = OpenAI(api_key=settings.openai_api_key)
     response = client.chat.completions.create(
         model=settings.openai_model,
-        messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": user},
-        ],
+        messages=[{"role": "system", "content": system}, *messages],
     )
     return response.choices[0].message.content
 
 
-def _call_anthropic(system: str, user: str) -> str:
+def _call_anthropic(system: str, messages: list[dict]) -> str:
     from anthropic import Anthropic
 
     client = Anthropic(api_key=settings.anthropic_api_key)
@@ -25,22 +22,23 @@ def _call_anthropic(system: str, user: str) -> str:
         model=settings.anthropic_model,
         max_tokens=2048,
         system=system,
-        messages=[
-            {"role": "user", "content": user},
-        ],
+        messages=messages,
     )
     return response.content[0].text
 
 
-def generate_estimation(system: str, user: str) -> dict:
+def generate_chat(system: str, messages: list[dict]) -> str:
+    """Llamada multi-turno: `messages` es la lista user/assistant sin el system prompt."""
     if settings.llm_provider == "openai":
-        estimation = _call_openai(system, user)
-        model = settings.openai_model
-    elif settings.llm_provider == "anthropic":
-        estimation = _call_anthropic(system, user)
-        model = settings.anthropic_model
-    else:
-        raise ValueError(f"Proveedor de LLM no soportado: {settings.llm_provider}")
+        return _call_openai(system, messages)
+    if settings.llm_provider == "anthropic":
+        return _call_anthropic(system, messages)
+    raise ValueError(f"Proveedor de LLM no soportado: {settings.llm_provider}")
+
+
+def generate_estimation(system: str, user: str) -> dict:
+    estimation = generate_chat(system, [{"role": "user", "content": user}])
+    model = settings.openai_model if settings.llm_provider == "openai" else settings.anthropic_model
 
     return {
         "estimation": estimation,
