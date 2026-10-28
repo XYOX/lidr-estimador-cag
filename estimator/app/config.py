@@ -65,6 +65,9 @@ class Settings(BaseSettings):
     # in the single available retry, and the loop falls back without converging.
     BOSS_MAX_ITERATIONS: int = 3
 
+    # --- Session 8 fields (PostgreSQL + pgvector) ---
+    DATABASE_URL: str = "postgresql+asyncpg://estimator:estimator@localhost:5432/estimator"
+
     @model_validator(mode="after")
     def validate_at_least_one_api_key(self) -> "Settings":
         """LiteLLM may try either provider via fallback, so we require at least one key."""

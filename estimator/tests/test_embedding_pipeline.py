@@ -18,14 +18,15 @@ from app.embedding_pipeline.embedder import (
     estimate_cost_usd,
 )
 from app.embedding_pipeline.router import get_embedder
-from app.embedding_pipeline.schemas import Budget, Chunk, IngestRequest
+from app.db.session import get_session
+from app.embedding_pipeline.schemas import Budget, Chunk
 from app.main import app
 
 SAMPLE = Path(__file__).parent.parent / "data" / "budgets_sample.json"
 
 
 def _budgets() -> list[Budget]:
-    return IngestRequest.model_validate(json.loads(SAMPLE.read_text())).budgets
+    return [Budget.model_validate(b) for b in json.loads(SAMPLE.read_text())["budgets"]]
 
 
 def _rate_limit_error() -> openai.RateLimitError:
@@ -188,45 +189,114 @@ def test_estimated_cost_uses_two_cents_per_million_tokens() -> None:
 # ---- endpoint ----
 
 
+class FakeSession:
+    """AsyncSession double: records adds/commits/rollbacks, fakes the duplicate lookup."""
+
+    def __init__(self, existing_id: int | None = None) -> None:
+        self.existing_id = existing_id
+        self.added: list = []
+        self.commits = 0
+        self.rollbacks = 0
+
+    async def scalar(self, stmt):
+        return self.existing_id
+
+    def add(self, obj) -> None:
+        self.added.append(obj)
+
+    def add_all(self, objs) -> None:
+        self.added.extend(objs)
+
+    async def flush(self) -> None:
+        for obj in self.added:
+            if getattr(obj, "id", None) is None:
+                obj.id = 42
+
+    async def commit(self) -> None:
+        self.commits += 1
+
+    async def rollback(self) -> None:
+        self.rollbacks += 1
+
+
+def _payload() -> dict:
+    return {
+        "source_path": "data/budgets/budget_2024_014.json",
+        "document_type": "historical_budget",
+        "content": json.loads(SAMPLE.read_text())["budgets"][0],
+    }
+
+
 @pytest.fixture
 def ingest_client():
     fake = FakeEmbeddings()
+    session = FakeSession()
     app.dependency_overrides[get_embedder] = lambda: _embedder(fake)
+
+    async def _session():
+        yield session
+
+    app.dependency_overrides[get_session] = _session
     with TestClient(app) as client:
-        yield client, fake
+        yield client, fake, session
     app.dependency_overrides.pop(get_embedder, None)
+    app.dependency_overrides.pop(get_session, None)
 
 
-def test_ingest_returns_embedded_chunks_and_stats(ingest_client) -> None:
-    client, fake = ingest_client
+def test_ingest_persists_document_and_chunks_in_one_commit(ingest_client) -> None:
+    client, fake, session = ingest_client
+    payload = _payload()
+    n_components = len(payload["content"]["components"])
 
-    response = client.post("/embeddings/ingest", content=SAMPLE.read_text(), headers={"content-type": "application/json"})
+    response = client.post("/embeddings/ingest", json=payload)
 
     assert response.status_code == 200, response.text
     body = response.json()
-    assert len(body["chunks"]) == 24
-    assert len(body["chunks"][0]["embedding"]) == 2  # the fake vector size
-    stats = body["stats"]
-    assert stats["total_budgets"] == 6 and stats["total_chunks"] == 24
-    assert stats["total_tokens"] == sum(c["token_count"] for c in body["chunks"])
-    assert stats["estimated_cost_usd"] == pytest.approx(stats["total_tokens"] * 0.02 / 1_000_000)
-    assert len(fake.calls) == 1  # 24 chunks fit in one batch
+    assert body["document_id"] == 42
+    assert body["chunks_created"] == n_components
+    assert body["embedding_dimension"] == 1536
+    assert body["ingestion_time_ms"] >= 0
+    assert len(fake.calls) == 1  # one batched embeddings call, not chunk by chunk
+    assert len(session.added) == 1 + n_components
+    assert session.commits == 1 and session.rollbacks == 0
+    chunk = session.added[1]
+    assert chunk.chunk_type == "budget_component"
+    assert chunk.metadata_["client_sector"] == "fintech"
+
+
+def test_ingest_duplicate_source_path_is_409() -> None:
+    session = FakeSession(existing_id=7)
+
+    async def _session():
+        yield session
+
+    app.dependency_overrides[get_session] = _session
+    app.dependency_overrides[get_embedder] = lambda: _embedder(FakeEmbeddings())
+    try:
+        response = TestClient(app).post("/embeddings/ingest", json=_payload())
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 409
+    assert response.json() == {"detail": "Document already ingested", "document_id": 7}
+    assert session.added == [] and session.commits == 0
 
 
 def test_ingest_validation_errors_are_422(ingest_client) -> None:
-    client, _ = ingest_client
+    client, _, _ = ingest_client
 
-    assert client.post("/embeddings/ingest", json={"budgets": []}).status_code == 422
-    broken = json.loads(SAMPLE.read_text())
-    broken["budgets"][0]["components"][0]["complexity"] = "impossible"
+    assert client.post("/embeddings/ingest", json={"source_path": "x"}).status_code == 422
+    broken = _payload()
+    broken["content"]["components"][0]["complexity"] = "impossible"
     assert client.post("/embeddings/ingest", json=broken).status_code == 422
 
 
-def test_ingest_upstream_error_is_a_generic_500(ingest_client) -> None:
-    client, fake = ingest_client
+def test_ingest_embedder_failure_rolls_back_without_commit(ingest_client) -> None:
+    client, fake, session = ingest_client
     fake.failures = [openai.APIConnectionError(request=httpx.Request("POST", "https://x"))]
 
-    response = client.post("/embeddings/ingest", content=SAMPLE.read_text(), headers={"content-type": "application/json"})
+    response = client.post("/embeddings/ingest", json=_payload())
 
     assert response.status_code == 500
     assert response.json() == {"detail": "Embedding generation failed"}
+    assert session.commits == 0 and session.rollbacks == 1

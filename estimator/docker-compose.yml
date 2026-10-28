@@ -16,9 +16,12 @@ services:
     # (redis://localhost:6379) is meant for running uvicorn outside Docker.
     environment:
       REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql+asyncpg://estimator:estimator@postgres:5432/estimator
 
     depends_on:
       redis:
+        condition: service_healthy
+      postgres:
         condition: service_healthy
 
     # Bind-mount the app/ directory so code changes are reflected immediately
@@ -27,6 +30,10 @@ services:
     volumes:
       - ./app:/app/app
       - ./tests:/app/tests
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
+      - ./query_examples.py:/app/query_examples.py
+      - ./data:/app/data
 
     # Override the default CMD to enable auto-reload on file changes.
     # Remove --reload for production deployments.
@@ -60,5 +67,27 @@ services:
       retries: 3
     restart: unless-stopped
 
+  postgres:
+    # Official Postgres 16 image with the ``vector`` extension precompiled.
+    # The extension itself is enabled by the first Alembic migration.
+    image: pgvector/pgvector:pg16
+    container_name: estimator-postgres
+    environment:
+      POSTGRES_DB: estimator
+      POSTGRES_USER: estimator
+      POSTGRES_PASSWORD: estimator
+    ports:
+      # Host port is overridable (POSTGRES_PORT=5433) when 5432 is already taken.
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U estimator -d estimator"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
 volumes:
   redis_data:
+  postgres_data:

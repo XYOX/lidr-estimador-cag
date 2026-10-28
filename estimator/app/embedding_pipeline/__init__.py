@@ -1,7 +1,6 @@
 """Embedding pipeline: structural chunking of historical budgets + OpenAI embeddings.
 
-Vectors are generated in memory and returned over HTTP; nothing is persisted yet
-(pgvector arrives in Session 08).
+Chunks and their vectors are persisted in PostgreSQL + pgvector (see ``app.db``).
 """
 
 from app.embedding_pipeline.chunker import JSONStructuralChunker

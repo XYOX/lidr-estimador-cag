@@ -204,6 +204,27 @@ Los tres tests son de integración con `TestClient`, un `FakeLLMWrapper` que cap
 
 El cliente Rails (`estimator-web/`) se adaptó al flujo conversacional con un nuevo controller `ChatSessionsController` (rutas `/chat_sessions`, root re-apuntado aquí), un panel lateral con el `ProjectMetadata` actual, multipart vía `faraday-multipart` y un botón "Nueva conversación" que destruye el mirror local y arranca una sesión limpia. El endpoint transaccional `EstimationsController` se mantiene operativo para la demo histórica.
 
+## Sesión 8 — Persistencia con PostgreSQL + pgvector
+
+El pipeline de la Sesión 07 deja de devolver vectores por HTTP: `POST /embeddings/ingest` persiste cada presupuesto (un `document` y sus `chunks` con embedding) en una sola transacción, y `POST /search` resuelve consultas semánticas con SQL.
+
+```bash
+docker compose up -d postgres
+docker compose run --rm estimator alembic upgrade head
+# si el puerto 5432 está ocupado en tu máquina: POSTGRES_PORT=5433 docker compose up -d postgres
+docker compose run --rm estimator python query_examples.py
+```
+
+### Decisiones de schema
+
+**(a) Dos tablas, no una.** Un presupuesto produce N chunks. En una sola tabla, los datos del documento (`source_path`, `document_type`, `ingested_at`) se repetirían en cada fila, y la unidad "presupuesto" solo existiría como convención. Con `documents` + `chunks` la idempotencia es una consulta barata por `source_path` (el 409 de la ingesta), borrar un presupuesto es un `DELETE` con `ON DELETE CASCADE`, y la transacción garantiza que no hay documentos huérfanos sin chunks. Las filas de `chunks` quedan estrechas, lo que importa porque cada una arrastra un vector de 1536 floats (~6 KB).
+
+**(b) `metadata` como JSONB, no columnas.** Los atributos filtrables (sector, año, tecnología, complejidad…) pertenecen a los datos de origen y cambiarán con ellos: el universo de sectores ni siquiera está cerrado. Con columnas, cada atributo nuevo exige una migración y deja `NULL` en los chunks que no lo tienen; con JSONB el esquema relacional se mantiene estable y el índice GIN (`ix_chunks_metadata_gin`) permite filtrar por clave cuando lo necesitemos. El coste es perder tipado y constraints a nivel de base de datos. Lo que sí es columna es lo que es estable, obligatorio y consultado siempre: `document_id`, `chunk_type`, `content`, `embedding`. El atributo se llama `metadata_` en el ORM porque `metadata` está reservado por SQLAlchemy.
+
+**(c) `cosine_distance` (`<=>`), no L2 ni producto interno.** Los embeddings de OpenAI vienen normalizados, así que los tres operadores producen el mismo ranking; la elección es de convención y de alineación futura. Coseno es la convención habitual en RAG, y su distancia (0 = idéntico, 2 = opuesto) es fácil de interpretar. Además, el índice HNSW que añadiremos usará `vector_cosine_ops`: si la consulta usa otro operador que el de la operator class del índice, Postgres lo ignora en silencio y hace sequential scan. Fijar `<=>` ahora evita ese fallo.
+
+**(d) Sin índice vectorial, a propósito.** Con decenas de documentos y cientos de chunks el sequential scan es exacto y responde en pocos cientos de ms (la mayor parte es la llamada a OpenAI para embeber la consulta). Ese es el baseline: sin él no se puede medir qué aporta HNSW ni cuánto recall sacrifica (un índice aproximado puede devolver vecinos distintos de los exactos). Tampoco hay filtros por metadata, búsqueda híbrida ni tuning de parámetros: todo eso se compara contra este punto de partida.
+
 ---
 
 > Este proyecto forma parte del **Master en AI Engineering** y es la base sobre la que se construye en directo el resto de la Sesión 04 (output estructurado, guardrails, cache semántico) y de la Sesión 05 (compresión avanzada de memoria con anclas, tier dinámico, patrón Actor-Critic-Boss).
