@@ -1,23 +1,40 @@
-[Reunión de descubrimiento — Cliente: LogiNorte (Colombia) — Duración: 35 min]
+Reunión de alcance — proyecto sin cerrar
+Cliente: Nuria Belmonte (responsable de operaciones, clínica privada Vida+)
+Consultor: equipo de estimación
+Fecha: segunda reunión, el alcance sigue abierto
 
-CLIENTE: Queremos una app para nuestros conductores. Que vean sus entregas del día y que el cliente final pueda rastrear el pedido en vivo.
+[00:00:10] Consultor: Hola Nuria. La última vez quedamos en que ibais a concretar el alcance. ¿Cómo
+lo veis?
 
-CONSULTOR: ¿App nativa o web?
+[00:00:21] Nuria: Sí, a ver, lo hemos hablado en comité y... bueno, hay de todo. Te cuento y me dices.
+La idea inicial era una plataforma para que los pacientes pidan cita online, eso era lo prioritario.
+Una agenda, que vean los huecos del médico, reserven, reciban un recordatorio. Eso lo teníamos claro.
 
-CLIENTE: Nativa, iOS y Android. Bueno… en realidad casi todos los conductores tienen Android. Hagámoslo solo Android. O una PWA, no sé, ¿qué recomiendan?
+[00:01:05] Consultor: Vale, agenda y citas. ¿Y la integración con vuestro sistema clínico?
 
-CONSULTOR: Depende del uso offline. ¿Qué más?
+[00:01:12] Nuria: Ahí está el tema. Porque claro, si hacemos las citas, alguien dijo que ya
+puestos integremos con el historial clínico, lo del estándar ese, ¿HL7? FHIR, eso. Y suena bien,
+pero me da un poco de vértigo, porque eso ya es harina de otro costal y no sé si para la primera fase.
 
-CLIENTE: Optimización de rutas. Que el sistema arme las rutas solo cada mañana. Aunque, pensándolo bien, eso lo hace hoy el jefe de despacho en una hora y lo hace bien… quizá no hace falta. Lo que sí necesitamos es un dashboard de operaciones con reportes.
+[00:02:00] Nuria: Y luego está lo de la videoconsulta. El director médico está empeñado en la
+telemedicina, que si videollamada con el paciente, sala de espera virtual, notas durante la consulta.
+Yo le digo que vayamos paso a paso, pero él lo quiere todo ya. La verdad es que no lo tengo decidido.
 
-CONSULTOR: ¿Qué reportes?
+[00:02:55] Consultor: Entiendo. Entonces, para acotar: ¿arrancamos con la agenda de citas y dejamos
+FHIR y videoconsulta para después?
 
-CLIENTE: Entregas a tiempo, entregas fallidas, kilómetros. Y facturación, también queremos que se facture automáticamente al cliente B2B por cada entrega. Bueno, no, la facturación está en SAP y no quiero tocar SAP. Mejor exportamos un CSV.
+[00:03:08] Nuria: Pues... mira, ahora que lo dices en voz alta, igual la agenda sola se queda corta.
+Porque si un paciente pide cita pero luego no podemos ver su historial, ¿de qué nos sirve? A lo mejor
+lo de FHIR sí que es lo primero. O no. Es que depende de a quién preguntes en la clínica.
 
-CONSULTOR: ¿Y el rastreo en vivo para el cliente final?
+[00:04:00] Nuria: Y la videoconsulta... no sé, igual eso es lo que de verdad nos diferencia de la
+competencia y deberíamos empezar por ahí. Aunque también es lo más caro, me imagino. Uf. ¿Tú qué
+harías?
 
-CLIENTE: Sí… o solo notificaciones por SMS cuando salga el pedido y cuando llegue. El rastreo en mapa es bonito pero caro, ¿no? Déjame consultarlo con gerencia. Y también me pidieron ver si se puede integrar un chatbot. No sé, pongan todo y luego recortamos.
+[00:04:30] Consultor: Podemos plantear escenarios. ¿Hay fecha o presupuesto que nos marque?
 
-CONSULTOR: ¿Hay fecha objetivo?
+[00:04:38] Nuria: Fecha cerrada no. Presupuesto... depende de lo que entre. Mira, lo dejamos así: yo
+lo vuelvo a llevar al comité, porque sinceramente hoy no te puedo decir qué entra y qué no. Te escribo
+cuando lo tengamos. Lo siento, sé que esto no os lo pone fácil.
 
-CLIENTE: Antes de la temporada alta, o sea… depende de qué entre. Lo hablamos la próxima semana.
+[00:05:05] Consultor: Sin problema, Nuria. Quedamos a la espera de que cerréis prioridades. Gracias.

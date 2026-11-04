@@ -2,9 +2,9 @@
 
 Estado del repositorio: cierre de Sesión 08 (`fa48abe`). Todas las cifras de este documento salen de ejecuciones reales contra el servicio local (Postgres 16 + pgvector con los 6 presupuestos del seed: 24 chunks, 67–86 tokens cada uno).
 
-**Notas de honestidad sobre el material de partida**
+**Notas sobre el material de partida**
 
-- Los ficheros `examples/transcripts/*.txt` y `TEMPLATE.md` no estaban en el repositorio ni en ninguna rama. Redacté yo las tres transcripciones siguiendo la descripción del enunciado (`01_clear`, `02_ambiguous`, `03_hard`). **Hay que sustituirlas por las oficiales** y repetir el trace; los números de la sección 2 son de mi versión de `02_ambiguous.txt` (4.349 caracteres, 1.200 tokens).
+- Las transcripciones oficiales y `TEMPLATE.md` no estaban en este repositorio; las copié desde `LIDR-academy-temp/ai-engineering` (rama `main`, `examples/transcripts/` y `examples/TEMPLATE.md`). No usé el `arquitectura-actual.md` de ese repositorio: el diagnóstico sale solo de las ejecuciones propias.
 - Los nombres del enunciado (`ingest/`, `storage/`) no coinciden con el código. Equivalencias: `ingest/` es el endpoint `POST /embeddings/ingest` más el chunker (`app/embedding_pipeline/router.py`, `chunker.py`); `storage/` es `app/db/` (SQLAlchemy + pgvector).
 - No existe un endpoint HTTP que devuelva el embedding de un texto. El paso 1 del trace usa `OpenAIEmbedder` directamente con un script (`examples/trace_embed.py`).
 
@@ -61,6 +61,8 @@ flowchart LR
 
 ## 2. Trace anotado de `02_ambiguous.txt`
 
+Transcripción: reunión con Rubén Castaño (Casa Castaño, tienda gourmet física, España). 2.854 caracteres, 890 tokens. Pide, mezclados con divagaciones: tienda online, programa de puntos ("tampoco quiero liarlo mucho al principio"), panel de control ("lo veo clarísimo"), pago con tarjeta ("fundamental"), correo de confirmación de compra, y "decidme un número".
+
 Preparación (servicio contra el Postgres del compose, que publica el puerto 5433):
 
 ```bash
@@ -69,7 +71,7 @@ DATABASE_URL=postgresql+asyncpg://estimator:estimator@localhost:5433/estimator \
   uv run uvicorn app.main:app --port 8010 &
 ```
 
-### 2.1 Embedding de la transcripción completa
+### Paso 1: Embeber la transcripción completa
 
 ```bash
 cd estimator
@@ -77,98 +79,99 @@ PYTHONPATH=. uv run python ../examples/trace_embed.py ../examples/transcripts/02
 ```
 
 ```
-input_tokens=1200 input_chars=4349
+input_tokens=890 input_chars=2854
 dimension=1536
-first=-0.019882 last=0.027252
-l2_norm=0.999947
+first=0.006248 last=0.019028
+l2_norm=1.000350
 ```
 
-**Comentario.** 1.536 dimensiones y norma ≈ 1 (OpenAI normaliza, así que coseno y producto punto coinciden). El vector es un único promedio semántico de todo lo que se dijo: fisioterapia, estética, Instagram, el proveedor de PHP que falló, contabilidad, telemedicina "como idea". Es el centroide de una charla, no de un requisito, y tiene 1.200 tokens frente a chunks de ~70.
+**Comentario.** 1.536 dimensiones y norma ≈ 1 (OpenAI normaliza, así que coseno y producto punto coinciden). Es un único vector que promedia tienda online, fidelización, panel, pagos, el primo de Francia y el cuaderno de la tienda; es el centroide de una conversación, no de un requisito, y se compara contra chunks de ~70 tokens.
 
-### 2.2 Búsqueda semántica con la transcripción completa, k=5
+### Paso 2: Búsqueda semántica (top-5)
+
+`POST /search` recibe texto (no vector) y lo embebe internamente.
 
 ```bash
 jq -n --rawfile q examples/transcripts/02_ambiguous.txt '{query: $q, k: 5}' \
  | curl -s -X POST http://localhost:8010/search -H "Content-Type: application/json" -d @-
 ```
 
-Respuesta (campos `content` y `metadata` recortados; la salida completa se obtiene con el comando anterior):
+Respuesta (resumida; `content` completo en la respuesta real, aquí solo componente y descripción):
 
 ```json
-{"k": 5, "search_time_ms": 951, "results": [
- {"chunk_id": 16, "document_id": 4, "distance": 0.5079, "metadata": {"chunk_id": "BUD-2023-087::BILL-004",  "client_sector": "healthtech", "estimated_hours": 120.0, "complexity": "low"}},
- {"chunk_id": 13, "document_id": 4, "distance": 0.5302, "metadata": {"chunk_id": "BUD-2023-087::SCHED-001", "client_sector": "healthtech", "estimated_hours": 240.0, "complexity": "medium"}},
- {"chunk_id": 14, "document_id": 4, "distance": 0.5312, "metadata": {"chunk_id": "BUD-2023-087::VIDEO-002", "client_sector": "healthtech", "estimated_hours": 320.0, "complexity": "high"}},
- {"chunk_id": 15, "document_id": 4, "distance": 0.5595, "metadata": {"chunk_id": "BUD-2023-087::EHR-003",   "client_sector": "healthtech", "estimated_hours": 280.0, "complexity": "high"}},
- {"chunk_id": 18, "document_id": 5, "distance": 0.6179, "metadata": {"chunk_id": "BUD-2024-031::CART-002",  "client_sector": "retail",     "estimated_hours": 340.0, "complexity": "high"}}
+{"k": 5, "search_time_ms": 723, "results": [
+ {"chunk_id": 18, "document_id": 5, "distance": 0.6241, "metadata": {"chunk_id": "BUD-2024-031::CART-002", "client_sector": "retail",     "estimated_hours": 340.0, "complexity": "high"},   "component": "Checkout",         "description": "Cart, address book, multiple payment methods and order confirmation emails."},
+ {"chunk_id": 17, "document_id": 5, "distance": 0.6266, "metadata": {"chunk_id": "BUD-2024-031::CAT-001",  "client_sector": "retail",     "estimated_hours": 300.0, "complexity": "medium"}, "component": "Product catalog",  "description": "Searchable catalog with faceted filters, variants and image optimisation."},
+ {"chunk_id": 16, "document_id": 4, "distance": 0.6296, "metadata": {"chunk_id": "BUD-2023-087::BILL-004",  "client_sector": "healthtech", "estimated_hours": 120.0, "complexity": "low"},    "component": "Billing",          "description": "Invoicing per consultation with tax receipts and payment links."},
+ {"chunk_id": 14, "document_id": 4, "distance": 0.6304, "metadata": {"chunk_id": "BUD-2023-087::VIDEO-002", "client_sector": "healthtech", "estimated_hours": 320.0, "complexity": "high"},   "component": "Teleconsultation", "description": "Browser video calls between doctor and patient with waiting room and session recording consent."},
+ {"chunk_id": 20, "document_id": 5, "distance": 0.6477, "metadata": {"chunk_id": "BUD-2024-031::INV-004",  "client_sector": "retail",     "estimated_hours": 440.0, "complexity": "high"},   "component": "Inventory sync",   "description": "Nightly and event-driven stock synchronisation with the warehouse ERP."}
 ]}
 ```
 
-### 2.3 Valoración chunk a chunk
-
-Contexto: la petición real del cliente es (1) reserva online multi-sede con recordatorio y confirmación por WhatsApp, (2) paquetes de sesiones prepagados que se descuentan en cualquier sede. Lo demás (Instagram, contabilidad, fichas con fotos, telemedicina) lo declara explícitamente "para más adelante" o "con otro proveedor".
+### Paso 3: Lectura de los chunks devueltos
 
 | # | Chunk | Presupuesto / sector | ¿Relevante? |
 |---|---|---|---|
-| 1 | `BILL-004` Billing (120 h) | BUD-2023-087, healthtech (clínicas privadas, MX) | Parcial. Es facturación por consulta con Stripe; el cliente pide paquetes prepagados con saldo de sesiones, que es otro problema (control de saldo, multi-sede). Aparece primero probablemente por los términos "pagos/boletas" repetidos en la transcripción. |
-| 2 | `SCHED-001` Appointment scheduling (240 h) | BUD-2023-087, healthtech | Sí, es el mejor resultado: calendario, disponibilidad y recordatorios. Le faltan multi-sede, selección de terapeuta y WhatsApp, así que 240 h es un piso. |
-| 3 | `VIDEO-002` Teleconsultation (320 h) | BUD-2023-087, healthtech | No. Coincide con la mención de telemedicina que el cliente descartó ("lo dejo ahí como idea"). Es ruido que inflaría la estimación 320 h. |
-| 4 | `EHR-003` Medical records (280 h) | BUD-2023-087, healthtech | Dudoso. Coincide con las fichas digitalizadas que el cliente pospone ("para más adelante"). Útil como fase 2, no para el alcance inicial. |
-| 5 | `CART-002` Checkout (340 h) | BUD-2024-031, retail | Débil. Solo comparte "pagos". Es el primer síntoma de que k=5 ya se agotó la parte útil del corpus. |
+| 1 | `CART-002` Checkout (340 h) | BUD-2024-031, retail (e-commerce con fidelización) | Sí. Carrito, varios métodos de pago y correos de confirmación de pedido: cubre a la vez dos de sus peticiones (pago con tarjeta y correo al comprar). |
+| 2 | `CAT-001` Product catalog (300 h) | BUD-2024-031, retail | Sí. Es la base de "que la gente entre, vea los productos y compre". |
+| 3 | `BILL-004` Billing (120 h) | BUD-2023-087, healthtech | No. Facturación por consulta médica; Rubén no habla de facturas. Ruido semántico por "pago". |
+| 4 | `VIDEO-002` Teleconsultation (320 h) | BUD-2023-087, healthtech | No, claramente irrelevante: nada en la transcripción sugiere vídeo. Sumaría 320 h inventadas, y queda por encima de la fidelización. |
+| 5 | `INV-004` Inventory sync (440 h) | BUD-2024-031, retail | Parcial. Él quiere *ver* el stock en el panel, no sincronizarlo con un ERP de almacén; con 440 h sobreestimaría. |
 
-**Balance.** El resultado es mejor de lo esperado en el sector (healthtech es el vecino correcto) pero malo como insumo de estimación: 1 chunk claramente útil de 5, 2 que contradicen lo que el cliente quiere, y ninguno cubre los paquetes de sesiones.
+**Balance.** El sector se acierta (retail es el vecino correcto y su presupuesto aparece 3 veces), pero solo 2 de 5 resultados son claramente útiles. Lo peor es lo que falta: `LOYAL-003` (programa de puntos) sale en la posición 7 (0,657), detrás de la teleconsulta, y lo más parecido a su panel de control, `REPORT-003`, en la 11 (0,705).
 
-### 2.4 Comprobaciones adicionales (usadas en la sección 3)
+### Comprobaciones adicionales (usadas en la sección 3)
+
+Ranking completo (k=24 = todo el corpus) y consultas por requisito, con los mismos comandos cambiando `query`/`k`:
 
 ```bash
-# Distribución completa de distancias (k=24 = todo el corpus)
 jq -n --rawfile q examples/transcripts/02_ambiguous.txt '{query: $q, k: 24}' \
  | curl -s -X POST localhost:8010/search -H "Content-Type: application/json" -d @- \
  | jq -r '.results[] | "\(.distance)\t\(.metadata.chunk_id)"'
 ```
 
-- Rango sobre los 24 chunks: **0,508 a 0,723**. Todo el corpus cabe en 0,215 de distancia, y el top-5 en 0,11.
-- Solo el párrafo donde el cliente concreta lo que quiere (reservar, WhatsApp, paquetes), como query: `SCHED-001` 0,498 (primero), `BILL-004` 0,520, `VIDEO-002` 0,545, `EHR-003` 0,563, `NOTIF-004` (seguros) 0,696. Mejora el orden, pero sigue trayendo teleconsulta y registros médicos.
-- Query solo de "paquetes prepagados de sesiones que se descuentan en cualquier sede": mejor resultado `BILL-004` a **0,686**, y `PAY-002` (transferencias bancarias fintech) en tercer lugar a 0,755. No hay precedente en el corpus y el sistema no lo dice.
-- `01_clear.txt`: top-1 `NOTIF-004` 0,423 (seguros, el sector correcto). `03_hard.txt`: top-3 todos de logística (0,520–0,545).
-- Consulta fuera de dominio del propio `output_examples.txt` ("mobile application for restaurant reservations"): distancias 0,574–0,641, es decir, el mismo rango que una consulta aceptable.
+- Con la transcripción entera, las 24 distancias caen en **0,624 a 0,774**; el top-5 completo en 0,624–0,648 (**0,024 de rango**). `VIDEO-002` (irrelevante, 0,6304) y `CART-002` (correcto, 0,6241) están a 0,006 de distancia.
+- Consultas escritas a mano, una por requisito: *"Programa de puntos o club de fidelización..."* → `LOYAL-003` primero (0,609); *"Panel de control con pedidos del día, productos más vendidos, stock y gráficas"* → `REPORT-003` (logística) primero (0,647); *"Pago con tarjeta fácil y seguro en el checkout..."* → `CART-002` (0,648); *"Tienda online: catálogo de productos y compra..."* → `CAT-001` (0,660); *"Correo de confirmación al cliente cuando compra"* → `CART-002` (0,697), con `NOTIF-004` (seguros) segundo. Cada requisito aislado recupera el chunk correcto en primer lugar, aunque en español contra un corpus en inglés.
+- Referencia con las otras transcripciones: `01_clear` (fintech) top-3 `AUTH-001` 0,400, `PAY-002` 0,418, `UI-004` 0,449; `03_hard` (clínica Vida+) top-3 healthtech, con `VIDEO-002` primero (0,475) y `SCHED-001` segundo (0,509).
 
 ---
 
 ## 3. Diagnóstico: cinco fallos
 
-### Fallo 1: La transcripción entera como query produce un vector difuso y distancias comprimidas
-- **Problema observado:** con 1.200 tokens de conversación frente a chunks de ~70, las 24 distancias caen en 0,508–0,723 y el top-5 en 0,11 (sección 2.4). `BILL-004` (facturación) queda primero y `SCHED-001` segundo, aunque la prioridad declarada del cliente es la reserva con recordatorios. Con solo el párrafo del requisito, `SCHED-001` pasa a primero (0,498).
-- **Causa probable:** `POST /search` embebe `request.query` tal cual; no existe etapa que separe lo que el cliente pide de lo que comenta. El ruido (Instagram, el proveedor de PHP, contabilidad) mueve el centroide.
-- **Propuesta de solución:** una etapa de comprensión de la transcripción que produzca una consulta limpia por requisito antes de buscar, en lugar de embeber la conversación.
+### Fallo 1: La transcripción entera como query comprime las distancias y desordena el ranking
+- **Problema observado:** con 890 tokens de conversación frente a chunks de ~70, el top-5 cae en 0,024 de rango y `VIDEO-002` (teleconsulta, sin relación con el cliente) queda 4.º, por delante de `LOYAL-003`, que está 7.º. Las mismas peticiones, buscadas una a una, devuelven el chunk correcto en primer lugar (paso 2, comprobaciones).
+- **Causa probable:** `POST /search` embebe `request.query` tal cual; no hay etapa que transforme la conversación en consultas de búsqueda. El ruido (cuaderno, sobrina, primo en Francia) arrastra el centroide hacia términos genéricos como "pago" o "cliente".
+- **Propuesta de solución:** una etapa previa a la búsqueda que convierta la transcripción en consultas limpias, en lugar de embeber la conversación.
 
-### Fallo 2: Un solo vector no puede representar varios requisitos ni distinguir alcance de "ideas"
-- **Problema observado:** el top-5 incluye `VIDEO-002` (0,531) y `EHR-003` (0,560), que el cliente pospuso explícitamente, y ningún chunk cubre los paquetes de sesiones. Al buscar ese requisito aislado el mejor candidato está a 0,686 y es irrelevante. En `03_hard` el cliente se contradice (Android/iOS/PWA, rutas sí/no, SAP sí/no) y un vector único los promedia sin resolverlos.
-- **Causa probable:** no hay extracción de requisitos con estado (en alcance, fuera de alcance, indeciso, prioridad). `ProjectMetadata` (S05) solo guarda `agreed_scope` libre, nombre, tecnologías y equipo, y no está conectado al retrieval.
-- **Propuesta de solución:** extraer una lista estructurada de requisitos con estado y prioridad, y hacer una búsqueda por requisito, marcando como "ambiguo" lo que no esté cerrado para no estimarlo en silencio.
+### Fallo 2: Un solo vector no distingue requisitos, ni prioridad, ni "ideas"
+- **Problema observado:** la transcripción contiene cinco peticiones con pesos distintos (panel "clarísimo", pago "fundamental", puntos "sin liarlo al principio", Francia "no me hagas caso") y el resultado no refleja ninguna jerarquía. Dos de las cinco (puntos y panel) quedan fuera del top-5 y entra `INV-004` (440 h) por una petición que Rubén no hizo. En `03_hard` el cliente cambia de alcance a mitad de reunión y un vector único lo promedia.
+- **Causa probable:** no hay extracción de requisitos con estado. `ProjectMetadata` (S05) solo guarda nombre, equipo, tecnologías y un `agreed_scope` libre, y no está conectado al retrieval.
+- **Propuesta de solución:** extraer una lista estructurada de requisitos con estado (en alcance, opcional, descartado, indeciso) y prioridad, y buscar por requisito; lo indeciso se marca, no se estima en silencio.
 
-### Fallo 3: Se recuperan componentes sueltos y 4 de los 5 vienen del mismo presupuesto
-- **Problema observado:** 4 de 5 resultados son de `BUD-2023-087`; son hermanos que comparten cabecera `[Project][Sector]`. Entran por afinidad de proyecto, no por afinidad de requisito (`VIDEO-002`, `EHR-003`). Cada chunk trae horas propias, pero nada del total (`total_estimated_hours`: 960) ni de qué componentes de ese presupuesto se parecen al pedido y cuáles no.
-- **Causa probable:** el chunker incluye cabecera del proyecto en el texto embebido y `/search` hace top-k plano por chunk, sin diversidad, agrupación por presupuesto ni reranking.
-- **Propuesta de solución:** una etapa de reranking/agrupación que puntúe por presupuesto y devuelva por cada requisito el mejor componente, con evidencia de su presupuesto de origen.
+### Fallo 3: La búsqueda no usa sector ni otros metadatos, y entran chunks de dominios ajenos
+- **Problema observado:** para una tienda de productos gourmet entran en el top-5 dos chunks de healthtech (`BILL-004` 0,630 y `VIDEO-002` 0,630), el 40 % de los resultados.
+- **Causa probable:** `SearchRequest` solo tiene `query` y `k`; el índice GIN sobre `metadata` (sector, año, complejidad, tecnología) existe pero nunca se consulta, y nadie extrae el sector de la transcripción.
+- **Propuesta de solución:** inferir sector y señales (país, tecnología, tamaño) en la etapa de comprensión y exponerlos como filtros o sesgo del retrieval, con una segunda pasada sin filtro cuando el sector no tiene cobertura.
 
-### Fallo 4: No existe señal de "sin precedente"; la distancia no es interpretable
-- **Problema observado:** una consulta fuera de dominio (restaurantes) devuelve 0,574–0,641 y la transcripción ambigua 0,508–0,618; los paquetes prepagados devuelven 0,686 con un chunk de otro dominio. Nada distingue "buen match" de "lo menos malo". `CART-002` (retail) aparece como quinto resultado solo porque k=5 obliga a rellenar.
-- **Causa probable:** `/search` siempre devuelve exactamente k filas, sin umbral, sin calibración de distancias contra el corpus y sin evaluación de retrieval (no hay golden set de relevancia).
-- **Propuesta de solución:** un umbral calibrado con un conjunto de consultas etiquetadas, y una respuesta explícita de cobertura (cubierto / cubierto parcialmente / sin precedente) por requisito.
+### Fallo 4: La distancia no es interpretable y no hay señal de cobertura
+- **Problema observado:** el mejor resultado correcto (0,624, `CART-002`) y el irrelevante (0,630, `VIDEO-002`) son indistinguibles; la misma búsqueda sobre `01_clear` da 0,400. El panel de control, pedido como lo más claro, solo tiene como vecino un reporte de logística (`REPORT-003`, 140 h, "low") y el sistema no avisa de que no hay precedente en retail. Lo mismo con el correo de confirmación (solo existe dentro de `CART-002` y como `NOTIF-004` de seguros).
+- **Causa probable:** `/search` devuelve siempre exactamente k filas, sin umbral ni calibración, y no existe un conjunto de consultas etiquetadas que permita saber qué distancia significa "relevante".
+- **Propuesta de solución:** un conjunto etiquetado de consultas para calibrar un umbral, y una respuesta de cobertura por requisito (cubierto, parcial, sin precedente), que alimente los supuestos de la estimación.
 
-### Fallo 5: El retrieval no está conectado a la generación y no filtra por metadata
-- **Problema observado:** `/sessions/{id}/estimate` estima sin ejemplos históricos y `/search` devuelve chunks sin que nadie los use; no hay endpoint transcripción → estimación. Además, las búsquedas ignoran sector, año o complejidad, pese a existir el índice GIN sobre `metadata`.
-- **Causa probable:** faltan las etapas Augmentation (armar contexto con evidencia y requisitos) y Generation fundamentada (estimar por componente citando presupuestos origen); el filtrado por metadata nunca se expuso en `SearchRequest` (solo `query` y `k`).
-- **Propuesta de solución:** una etapa de armado de contexto y una de generación que consuman el retrieval por requisito y produzcan horas por componente con citas y supuestos explícitos, más filtros opcionales de metadata en la búsqueda.
+### Fallo 5: El retrieval no está conectado a la generación y no hay salida numérica con supuestos
+- **Problema observado:** Rubén termina con "decidme un número". Hoy no existe un camino transcripción → estimación: `/sessions/{id}/estimate` no lee la base vectorial (grep sin coincidencias en `app/services`, `routers`, `sessions`, `prompts`) y `/search` devuelve chunks que nadie consume.
+- **Causa probable:** faltan las etapas Augmentation (armar el contexto con requisitos y evidencia) y Generation fundamentada (horas por componente que citen presupuestos origen).
+- **Propuesta de solución:** una etapa que arme el contexto y otra que genere la estimación por componente, con rango, supuestos y citas, reutilizando el critic y los guardrails que ya existen.
 
 ### Otros (no priorizados)
-- Corpus mínimo: 6 presupuestos, 24 chunks, ninguno de fisioterapia/estética. Con el corpus actual cualquier estimación de ese sector extrapola desde healthtech.
-- Sin endpoint que devuelva embeddings; el trace requirió usar el módulo desde un script.
-- Solo búsqueda densa. Términos exactos ("WhatsApp", "Stripe") podrían beneficiarse de búsqueda híbrida (BM25).
-- Límite de entrada del modelo de embeddings (8.191 tokens): una reunión de más de ~1 h superaría el límite y `embed_one` fallaría sin troceado ni resumen previo.
-- Idioma: transcripción en español contra corpus en inglés. En mis pruebas la query en español no empeoró el ranking (`SCHED-001` 0,498 en ES frente a 0,531 en EN), pero con una muestra tan pequeña no se puede descartar.
-- Latencia de `/search`: 359–951 ms en las ejecuciones, dominada por la llamada de embedding sincrónica.
+- Chunks sueltos sin agregación: 3 de los 5 resultados son hermanos de `BUD-2024-031` y ninguno informa del total del presupuesto (1.340 h) ni de qué componentes cubre el pedido.
+- Corpus mínimo: 6 presupuestos, 24 chunks. No hay panel/reportes de retail ni notificaciones por correo como componente propio.
+- Sin endpoint que devuelva embeddings; el trace requirió un script que usa el módulo directamente.
+- Solo búsqueda densa; términos exactos ("tarjeta", "stock") podrían beneficiarse de búsqueda híbrida.
+- Límite de entrada del modelo de embeddings (8.191 tokens): una reunión más larga requeriría troceado o resumen previo; hoy `embed_one` falla.
+- Horas sin contexto: los presupuestos históricos son de ES, MX, PE y CO; no hay ajuste por país, equipo o año.
+- Idioma: la query en español contra corpus en inglés funcionó bien en las pruebas por requisito, así que no lo considero un fallo con esta muestra.
+- Latencia: 359–951 ms por búsqueda, dominada por la llamada síncrona de embedding.
 
 ---
 
