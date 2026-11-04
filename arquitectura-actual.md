@@ -13,7 +13,7 @@ Estado del repositorio: cierre de Sesión 08 (`fa48abe`). Todas las cifras de es
 ## 1. Arquitectura actual (cierre de Sesión 08)
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph FE["Frontend"]
     ST["Streamlit<br/>streamlit_app.py<br/>(formulario a /api/v1/estimate)"]
   end
@@ -22,15 +22,15 @@ flowchart LR
     BN["Consumidor HTTP (Rails u otro)<br/>fuera de este repo"]
   end
 
-  subgraph AI["Servicio IA (FastAPI, estimator/app)"]
+  subgraph AI["Servicio IA - FastAPI"]
     direction TB
-    subgraph LEGACY["S02-S06: estimación conversacional (sin retrieval)"]
-      EST["POST /api/v1/estimate<br/>POST /sessions/{id}/estimate<br/>POST /sessions/{id}/estimate-acb"]
+    subgraph LEGACY["S02-S06"]
+      EST["Estimación SIN retrieval<br/>POST /api/v1/estimate<br/>POST /sessions/{id}/estimate<br/>POST /sessions/{id}/estimate-acb"]
       SVC["services/: llm_wrapper, boss, critic, cache<br/>sessions/: memoria, compresión, metadata<br/>prompts/estimation v1-v3"]
       EST --> SVC
     end
-    subgraph RAGPART["S07-S08: vectorización y búsqueda"]
-      ING["ingest: POST /embeddings/ingest<br/>(budget JSON)"]
+    subgraph RAGPART["S07-S08"]
+      ING["Embeddings y búsqueda<br/>ingest: POST /embeddings/ingest<br/>(budget JSON)"]
       CH["embedding_pipeline/chunker.py<br/>1 componente = 1 chunk"]
       EM["embedding_pipeline/embedder.py<br/>text-embedding-3-small, 1536 dim"]
       SRCH["POST /search<br/>{query: texto, k}"]
@@ -178,7 +178,7 @@ jq -n --rawfile q examples/transcripts/02_ambiguous.txt '{query: $q, k: 24}' \
 ## 4. Propuesta de evolución arquitectónica
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph FE["Frontend"]
     ST["Streamlit / UI de reunión"]
   end
