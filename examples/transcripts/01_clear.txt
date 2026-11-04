@@ -1,0 +1,21 @@
+[Reunión de descubrimiento — Cliente: Seguros Andinos (México) — Duración: 22 min]
+
+CONSULTOR: Gracias por el tiempo. Cuéntame qué necesitan.
+
+CLIENTE: Muy concreto. Somos una aseguradora mediana en México, sector seguros de auto y hogar. Hoy los siniestros entran por teléfono y por correo, y un equipo de seis personas los transcribe a mano en nuestro core. Queremos un portal web donde el asegurado abra el siniestro él mismo.
+
+CONSULTOR: ¿Qué debería poder hacer el asegurado en ese portal?
+
+CLIENTE: Un formulario por pasos: datos de la póliza, qué pasó, fecha, lugar, y subir fotos y documentos — el parte policial, facturas, la licencia. Que pueda guardar borrador y volver después.
+
+CONSULTOR: ¿Y del lado de ustedes?
+
+CLIENTE: Queremos que los documentos se lean solos, con OCR, para extraer número de póliza, montos y fechas. Y luego un triaje automático: clasificar el siniestro por gravedad y mandarlo al ajustador correcto. Los casos simples, menores a cierto monto, que se aprueben con reglas.
+
+CONSULTOR: ¿Notificaciones?
+
+CLIENTE: Sí, correo y WhatsApp en cada cambio de estado. El stack lo tenemos definido: frontend en Angular porque es lo que usa nuestro equipo interno, backend en Python con FastAPI, y estamos en AWS. Para OCR estamos abiertos, pensábamos en Textract.
+
+CONSULTOR: ¿Plazo y presupuesto?
+
+CLIENTE: Queremos el MVP en cinco o seis meses. Presupuesto aprobado, rango medio. Necesitamos la estimación en horas por módulo.

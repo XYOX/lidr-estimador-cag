@@ -1,0 +1,39 @@
+[Reunión de descubrimiento — Cliente: Grupo Vitalia (Perú) — Duración: 41 min — Transcripción automática, sin editar]
+
+CONSULTOR: Bueno, muchas gracias por recibirnos. Para empezar, cuéntenme un poco de ustedes y de qué los trajo a buscarnos.
+
+CLIENTE: Sí, claro. Mira, nosotros empezamos hace como ocho años con un solo local en Miraflores, era mi esposa y yo, ella es fisioterapeuta, yo vengo más del lado comercial, trabajé muchos años en banca, en el BCP, en el área de tarjetas. Y bueno, el negocio fue creciendo, ahora tenemos cuatro locales, dos en Lima, uno en Arequipa y uno que abrimos el año pasado en Trujillo, que la verdad nos ha costado bastante, el tema de personal allá es complicado.
+
+CONSULTOR: Entiendo. ¿Y qué servicios ofrecen?
+
+CLIENTE: Empezamos con fisioterapia pura, pero ahora hacemos también estética, o sea tratamientos faciales, drenaje linfático, cosas de esas, y tenemos un par de nutricionistas. La parte de estética es la que más crece, honestamente. La gente de 30 a 45 años, sobre todo mujeres, viene mucho por Instagram. Nosotros invertimos bastante en Instagram, tenemos una chica que nos maneja las redes, y eso funciona, pero no sabemos bien cuánto funciona, ¿me entiendes? No tenemos cómo medir.
+
+CONSULTOR: Claro.
+
+CLIENTE: Y el otro tema es que tuvimos una mala experiencia con un proveedor. Contratamos hace dos años a una empresa que nos iba a hacer "el sistema", así entre comillas, y al final nos entregaron una cosa en PHP que nadie entendía, se caía todos los lunes, y terminamos volviendo al Excel. Entonces ahora mi socio está un poco reacio, dice que mejor sigamos con Excel y el cuaderno. Yo no pienso igual, pero entiendo el miedo.
+
+CONSULTOR: Es razonable. ¿Cómo manejan hoy el día a día?
+
+CLIENTE: Mira, es un caos un poco. Cada local tiene su recepcionista, y la recepcionista tiene un cuaderno y un Excel compartido en Google Drive. Los pacientes escriben por WhatsApp al número del local, la recepcionista les responde cuando puede, a veces se demora dos horas, y ahí perdemos gente, porque si no les respondes rápido se van a otro lado. Y luego está el tema de que la gente no viene. Tenemos como un veinte por ciento de gente que reserva y no aparece. Eso nos mata, porque el fisioterapeuta está ahí sentado.
+
+CONSULTOR: ¿Les recuerdan la cita?
+
+CLIENTE: A veces. Depende de la recepcionista. En Arequipa la chica es muy ordenada y les escribe un día antes, y ahí el ausentismo es mucho menor. En Trujillo, nada.
+
+También hay un tema con los pagos. Muchos clientes de estética compran paquetes, por ejemplo un paquete de diez sesiones de drenaje, lo pagan por adelantado, y luego hay que llevar la cuenta de cuántas sesiones les quedan. Eso hoy se hace en el cuaderno y a veces hay discusiones, el cliente dice "me quedan tres" y el cuaderno dice que le queda una. Y si el cliente va a otro local, el otro local no sabe nada.
+
+CONSULTOR: Entiendo.
+
+CLIENTE: Y bueno, también pensamos en algún momento hacer algo de telemedicina, en pandemia hicimos algunas consultas de nutrición por Zoom, pero no sé si eso tiene futuro, la verdad. Lo dejo ahí como idea. Y mi esposa quiere que las fichas de los pacientes estén digitalizadas, con fotos del antes y después para estética, pero yo creo que eso es para más adelante.
+
+Ah, y otra cosa, contabilidad. Nuestro contador nos pide todo a fin de mes y es una locura juntar las boletas de los cuatro locales. Pero eso igual lo vemos con otro proveedor, creo.
+
+CONSULTOR: Si tuvieran que elegir una sola cosa para los próximos meses, ¿cuál sería?
+
+CLIENTE: Uf. Mira, lo que más me duele es que la gente no venga y que no le respondamos rápido. O sea, yo quisiera que el paciente pueda reservar solo, desde el celular, ver qué horarios hay en qué local y con qué terapeuta, y que le llegue un recordatorio por WhatsApp un día antes, y que pueda confirmar o cancelar ahí mismo. Eso primero. Y que los paquetes de sesiones se descuenten solos, en cualquier local.
+
+Lo demás, Instagram, la contabilidad, lo de las fotos, eso ya veremos. Ah, y presupuesto no tenemos muy claro, no queremos gastar una barbaridad. Si nos puedes dar una idea de cuánto costaría y cuánto demora, mejor.
+
+CONSULTOR: Perfecto, con esto armamos una propuesta.
+
+CLIENTE: Ya, genial. Ah, y que sea fácil para las recepcionistas, porque la de Trujillo no es muy de computadoras.

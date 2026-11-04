@@ -1,0 +1,23 @@
+[Reunión de descubrimiento — Cliente: LogiNorte (Colombia) — Duración: 35 min]
+
+CLIENTE: Queremos una app para nuestros conductores. Que vean sus entregas del día y que el cliente final pueda rastrear el pedido en vivo.
+
+CONSULTOR: ¿App nativa o web?
+
+CLIENTE: Nativa, iOS y Android. Bueno… en realidad casi todos los conductores tienen Android. Hagámoslo solo Android. O una PWA, no sé, ¿qué recomiendan?
+
+CONSULTOR: Depende del uso offline. ¿Qué más?
+
+CLIENTE: Optimización de rutas. Que el sistema arme las rutas solo cada mañana. Aunque, pensándolo bien, eso lo hace hoy el jefe de despacho en una hora y lo hace bien… quizá no hace falta. Lo que sí necesitamos es un dashboard de operaciones con reportes.
+
+CONSULTOR: ¿Qué reportes?
+
+CLIENTE: Entregas a tiempo, entregas fallidas, kilómetros. Y facturación, también queremos que se facture automáticamente al cliente B2B por cada entrega. Bueno, no, la facturación está en SAP y no quiero tocar SAP. Mejor exportamos un CSV.
+
+CONSULTOR: ¿Y el rastreo en vivo para el cliente final?
+
+CLIENTE: Sí… o solo notificaciones por SMS cuando salga el pedido y cuando llegue. El rastreo en mapa es bonito pero caro, ¿no? Déjame consultarlo con gerencia. Y también me pidieron ver si se puede integrar un chatbot. No sé, pongan todo y luego recortamos.
+
+CONSULTOR: ¿Hay fecha objetivo?
+
+CLIENTE: Antes de la temporada alta, o sea… depende de qué entre. Lo hablamos la próxima semana.
