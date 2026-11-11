@@ -68,6 +68,20 @@ class Settings(BaseSettings):
     # --- Session 8 fields (PostgreSQL + pgvector) ---
     DATABASE_URL: str = "postgresql+asyncpg://estimator:estimator@localhost:5432/estimator"
 
+    # --- Session 10 fields (hybrid search + reranking) ---
+    # Default retrieval mode when a request does not specify one.
+    RETRIEVAL_MODE: Literal["vector", "hybrid"] = "vector"
+    # Reranking is a runtime switch: flip it with an env var, no code change.
+    RERANK_ENABLED: bool = False
+    RERANKER_MODEL: str = "cross-encoder/mmarco-mMiniLMv2-L12-H384-v1"
+    # Recall-then-rerank: wide candidate set first, fine reordering after.
+    RECALL_K: int = 50
+    RERANK_TOP_N: int = 5
+    # RRF smoothing constant (Cormack et al. 2009 use 60). Lower values weight the top ranks more.
+    RRF_K: int = 60
+    # Text search configuration of chunks.content_tsv. Must match the migration.
+    FTS_CONFIG: str = "english"
+
     @model_validator(mode="after")
     def validate_at_least_one_api_key(self) -> "Settings":
         """LiteLLM may try either provider via fallback, so we require at least one key."""

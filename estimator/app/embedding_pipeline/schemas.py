@@ -82,6 +82,9 @@ class IngestResponse(BaseModel):
 class SearchRequest(BaseModel):
     query: str = Field(min_length=1)
     k: int = Field(default=5, ge=1, le=50)
+    # None = use the server defaults (RETRIEVAL_MODE / RERANK_ENABLED).
+    mode: Literal["vector", "hybrid"] | None = None
+    rerank: bool | None = None
 
 
 class SearchResult(BaseModel):
@@ -89,12 +92,18 @@ class SearchResult(BaseModel):
     document_id: int
     chunk_type: str
     content: str
-    distance: float
+    # Cosine distance: present when the vector branch found the chunk.
+    distance: float | None = None
+    # Final ordering score: RRF (hybrid), cross-encoder (reranked), None for plain vector search.
+    score: float | None = None
     metadata: dict
 
 
 class SearchResponse(BaseModel):
     query: str
     k: int
+    mode: Literal["vector", "hybrid"]
+    reranked: bool
     search_time_ms: int
+    timings_ms: dict[str, int] = Field(default_factory=dict)
     results: list[SearchResult]

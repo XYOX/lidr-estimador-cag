@@ -228,3 +228,17 @@ docker compose run --rm estimator python query_examples.py
 ---
 
 > Este proyecto forma parte del **Master en AI Engineering** y es la base sobre la que se construye en directo el resto de la Sesión 04 (output estructurado, guardrails, cache semántico) y de la Sesión 05 (compresión avanzada de memoria con anclas, tier dinámico, patrón Actor-Critic-Boss).
+
+## Búsqueda híbrida y reranking (Sesión 10)
+
+`POST /search` acepta `mode` (`vector` | `hybrid`) y `rerank` (bool); si se omiten, se usan
+`RETRIEVAL_MODE` y `RERANK_ENABLED`. El modo híbrido fusiona la búsqueda vectorial con la
+full-text (`chunks.content_tsv`, config `english`) mediante RRF (`RRF_K`). El reranking
+recupera `RECALL_K` candidatos y deja los `RERANK_TOP_N` mejores con un cross-encoder.
+
+```bash
+curl -X POST localhost:8000/search -H 'Content-Type: application/json' \
+  -d '{"query": "JWT auth with roles", "k": 5, "mode": "hybrid", "rerank": true}'
+```
+
+Comparativa A/B/C/D con golden set anotado a mano: `evals/retrieval/RESULTS.md`.

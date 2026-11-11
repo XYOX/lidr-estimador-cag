@@ -1,0 +1,453 @@
+{
+  "runs": 10,
+  "results": [
+    {
+      "config": "A",
+      "label": "Vector",
+      "mode": "vector",
+      "rerank": false,
+      "precision_at_5": 0.56,
+      "recall_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "stage_ms": {
+        "embed": 353.28000000000003,
+        "recall": 4.9399999999999995,
+        "rerank": 0
+      },
+      "latency_ms": 349.78547510690987,
+      "queries": [
+        {
+          "id": "ecommerce_loyalty",
+          "retrieved": [
+            "BUD-2024-031::LOYAL-003",
+            "BUD-2024-031::CART-002",
+            "BUD-2024-031::CAT-001",
+            "BUD-2024-031::INV-004",
+            "BUD-2023-019::QUIZ-002"
+          ],
+          "precision_at_5": 0.6,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 360.3,
+            "recall": 5.4,
+            "rerank": 0
+          },
+          "latency_ms": 378.67356251808815
+        },
+        {
+          "id": "mobile_banking",
+          "retrieved": [
+            "BUD-2024-014::CARD-003",
+            "BUD-2024-014::PAY-002",
+            "BUD-2024-014::AUTH-001",
+            "BUD-2024-014::UI-004",
+            "BUD-2024-066::NOTIF-004"
+          ],
+          "precision_at_5": 0.8,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 328.8,
+            "recall": 5.1,
+            "rerank": 0
+          },
+          "latency_ms": 337.97939600481186
+        },
+        {
+          "id": "telehealth",
+          "retrieved": [
+            "BUD-2023-087::VIDEO-002",
+            "BUD-2023-087::SCHED-001",
+            "BUD-2023-087::BILL-004",
+            "BUD-2023-087::EHR-003",
+            "BUD-2023-019::QUIZ-002"
+          ],
+          "precision_at_5": 0.4,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 350.8,
+            "recall": 5.3,
+            "rerank": 0
+          },
+          "latency_ms": 350.50564601260703
+        },
+        {
+          "id": "jwt_rbac",
+          "retrieved": [
+            "BUD-2022-052::AUTH-004",
+            "BUD-2024-014::AUTH-001",
+            "BUD-2024-066::NOTIF-004",
+            "BUD-2023-019::SSO-004",
+            "BUD-2024-066::INTAKE-001"
+          ],
+          "precision_at_5": 0.4,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 364.3,
+            "recall": 4.8,
+            "rerank": 0
+          },
+          "latency_ms": 354.1581875033444
+        },
+        {
+          "id": "insurance_claims",
+          "retrieved": [
+            "BUD-2024-066::TRIAGE-003",
+            "BUD-2024-066::OCR-002",
+            "BUD-2024-066::INTAKE-001",
+            "BUD-2024-066::NOTIF-004",
+            "BUD-2022-052::TRACK-001"
+          ],
+          "precision_at_5": 0.6,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 362.2,
+            "recall": 4.1,
+            "rerank": 0
+          },
+          "latency_ms": 327.61058349569794
+        }
+      ]
+    },
+    {
+      "config": "B",
+      "label": "Hybrid (RRF)",
+      "mode": "hybrid",
+      "rerank": false,
+      "precision_at_5": 0.56,
+      "recall_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "stage_ms": {
+        "embed": 345.02,
+        "recall": 9.12,
+        "rerank": 0
+      },
+      "latency_ms": 348.67300000041723,
+      "queries": [
+        {
+          "id": "ecommerce_loyalty",
+          "retrieved": [
+            "BUD-2024-031::LOYAL-003",
+            "BUD-2024-031::CAT-001",
+            "BUD-2024-031::CART-002",
+            "BUD-2024-031::INV-004",
+            "BUD-2024-014::AUTH-001"
+          ],
+          "precision_at_5": 0.6,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 357,
+            "recall": 8.1,
+            "rerank": 0
+          },
+          "latency_ms": 347.4567295052111
+        },
+        {
+          "id": "mobile_banking",
+          "retrieved": [
+            "BUD-2024-014::PAY-002",
+            "BUD-2024-014::CARD-003",
+            "BUD-2024-014::AUTH-001",
+            "BUD-2024-014::UI-004",
+            "BUD-2024-066::NOTIF-004"
+          ],
+          "precision_at_5": 0.8,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 343.2,
+            "recall": 8.1,
+            "rerank": 0
+          },
+          "latency_ms": 349.30266650917474
+        },
+        {
+          "id": "telehealth",
+          "retrieved": [
+            "BUD-2023-087::VIDEO-002",
+            "BUD-2023-087::SCHED-001",
+            "BUD-2023-087::BILL-004",
+            "BUD-2023-087::EHR-003",
+            "BUD-2023-019::QUIZ-002"
+          ],
+          "precision_at_5": 0.4,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 339.8,
+            "recall": 10.8,
+            "rerank": 0
+          },
+          "latency_ms": 346.7344794917153
+        },
+        {
+          "id": "jwt_rbac",
+          "retrieved": [
+            "BUD-2022-052::AUTH-004",
+            "BUD-2024-014::AUTH-001",
+            "BUD-2023-087::EHR-003",
+            "BUD-2023-019::COURSE-001",
+            "BUD-2024-066::NOTIF-004"
+          ],
+          "precision_at_5": 0.4,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 345.5,
+            "recall": 8,
+            "rerank": 0
+          },
+          "latency_ms": 351.72929149121046
+        },
+        {
+          "id": "insurance_claims",
+          "retrieved": [
+            "BUD-2024-066::TRIAGE-003",
+            "BUD-2024-066::OCR-002",
+            "BUD-2024-066::INTAKE-001",
+            "BUD-2024-066::NOTIF-004",
+            "BUD-2022-052::ROUTE-002"
+          ],
+          "precision_at_5": 0.6,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 339.6,
+            "recall": 10.6,
+            "rerank": 0
+          },
+          "latency_ms": 348.1418330047745
+        }
+      ]
+    },
+    {
+      "config": "C",
+      "label": "Vector + rerank",
+      "mode": "vector",
+      "rerank": true,
+      "precision_at_5": 0.56,
+      "recall_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "stage_ms": {
+        "embed": 361.1,
+        "recall": 4.8999999999999995,
+        "rerank": 95.62
+      },
+      "latency_ms": 455.6848081003409,
+      "queries": [
+        {
+          "id": "ecommerce_loyalty",
+          "retrieved": [
+            "BUD-2024-031::CAT-001",
+            "BUD-2024-031::CART-002",
+            "BUD-2024-031::LOYAL-003",
+            "BUD-2024-031::INV-004",
+            "BUD-2024-014::AUTH-001"
+          ],
+          "precision_at_5": 0.6,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 407.8,
+            "recall": 4.8,
+            "rerank": 92.4
+          },
+          "latency_ms": 514.4045209890464
+        },
+        {
+          "id": "mobile_banking",
+          "retrieved": [
+            "BUD-2024-014::AUTH-001",
+            "BUD-2024-014::CARD-003",
+            "BUD-2024-014::PAY-002",
+            "BUD-2024-014::UI-004",
+            "BUD-2024-066::NOTIF-004"
+          ],
+          "precision_at_5": 0.8,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 326.9,
+            "recall": 5,
+            "rerank": 94.3
+          },
+          "latency_ms": 418.49731250840705
+        },
+        {
+          "id": "telehealth",
+          "retrieved": [
+            "BUD-2023-087::SCHED-001",
+            "BUD-2023-087::VIDEO-002",
+            "BUD-2023-087::BILL-004",
+            "BUD-2023-087::EHR-003",
+            "BUD-2023-019::COURSE-001"
+          ],
+          "precision_at_5": 0.4,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 358.3,
+            "recall": 4.8,
+            "rerank": 97.5
+          },
+          "latency_ms": 456.1646245128941
+        },
+        {
+          "id": "jwt_rbac",
+          "retrieved": [
+            "BUD-2022-052::AUTH-004",
+            "BUD-2024-014::AUTH-001",
+            "BUD-2024-066::TRIAGE-003",
+            "BUD-2024-066::NOTIF-004",
+            "BUD-2024-031::CART-002"
+          ],
+          "precision_at_5": 0.4,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 356.9,
+            "recall": 3.8,
+            "rerank": 96.7
+          },
+          "latency_ms": 438.52081199293025
+        },
+        {
+          "id": "insurance_claims",
+          "retrieved": [
+            "BUD-2024-066::TRIAGE-003",
+            "BUD-2024-066::OCR-002",
+            "BUD-2024-066::INTAKE-001",
+            "BUD-2024-066::NOTIF-004",
+            "BUD-2022-052::AUTH-004"
+          ],
+          "precision_at_5": 0.6,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 355.6,
+            "recall": 6.1,
+            "rerank": 97.2
+          },
+          "latency_ms": 450.83677049842663
+        }
+      ]
+    },
+    {
+      "config": "D",
+      "label": "Hybrid + rerank",
+      "mode": "hybrid",
+      "rerank": true,
+      "precision_at_5": 0.56,
+      "recall_at_5": 1.0,
+      "ndcg_at_5": 1.0,
+      "stage_ms": {
+        "embed": 349.54,
+        "recall": 7.96,
+        "rerank": 95.38
+      },
+      "latency_ms": 438.24134579626843,
+      "queries": [
+        {
+          "id": "ecommerce_loyalty",
+          "retrieved": [
+            "BUD-2024-031::CAT-001",
+            "BUD-2024-031::CART-002",
+            "BUD-2024-031::LOYAL-003",
+            "BUD-2024-031::INV-004",
+            "BUD-2024-014::AUTH-001"
+          ],
+          "precision_at_5": 0.6,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 369.5,
+            "recall": 9.5,
+            "rerank": 94.8
+          },
+          "latency_ms": 435.1882914925227
+        },
+        {
+          "id": "mobile_banking",
+          "retrieved": [
+            "BUD-2024-014::AUTH-001",
+            "BUD-2024-014::CARD-003",
+            "BUD-2024-014::PAY-002",
+            "BUD-2024-014::UI-004",
+            "BUD-2024-066::NOTIF-004"
+          ],
+          "precision_at_5": 0.8,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 352.8,
+            "recall": 7.4,
+            "rerank": 88.4
+          },
+          "latency_ms": 440.44129199755844
+        },
+        {
+          "id": "telehealth",
+          "retrieved": [
+            "BUD-2023-087::SCHED-001",
+            "BUD-2023-087::VIDEO-002",
+            "BUD-2023-087::BILL-004",
+            "BUD-2023-087::EHR-003",
+            "BUD-2023-019::COURSE-001"
+          ],
+          "precision_at_5": 0.4,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 345.3,
+            "recall": 8.6,
+            "rerank": 100.7
+          },
+          "latency_ms": 433.7439170049038
+        },
+        {
+          "id": "jwt_rbac",
+          "retrieved": [
+            "BUD-2022-052::AUTH-004",
+            "BUD-2024-014::AUTH-001",
+            "BUD-2024-066::TRIAGE-003",
+            "BUD-2024-066::NOTIF-004",
+            "BUD-2024-031::CART-002"
+          ],
+          "precision_at_5": 0.4,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 343.6,
+            "recall": 7.5,
+            "rerank": 101
+          },
+          "latency_ms": 451.39908298733644
+        },
+        {
+          "id": "insurance_claims",
+          "retrieved": [
+            "BUD-2024-066::TRIAGE-003",
+            "BUD-2024-066::OCR-002",
+            "BUD-2024-066::INTAKE-001",
+            "BUD-2024-066::NOTIF-004",
+            "BUD-2022-052::AUTH-004"
+          ],
+          "precision_at_5": 0.6,
+          "recall_at_5": 1.0,
+          "ndcg_at_5": 1.0,
+          "stage_ms": {
+            "embed": 336.5,
+            "recall": 6.8,
+            "rerank": 92
+          },
+          "latency_ms": 430.4341454990208
+        }
+      ]
+    }
+  ]
+}

@@ -18,6 +18,7 @@ from app.db.models import EMBEDDING_DIMENSION, Chunk, Document
 from app.db.session import get_session
 from app.embedding_pipeline.chunker import JSONStructuralChunker
 from app.embedding_pipeline.embedder import OpenAIEmbedder
+from app.retrieval.pipeline import retrieve
 from app.embedding_pipeline.schemas import (
     IngestRequest,
     IngestResponse,
@@ -129,40 +130,36 @@ async def search(
     embedder: OpenAIEmbedder = Depends(get_embedder),
 ) -> SearchResponse:
     started = time.perf_counter()
+    settings = get_settings()
+    mode = request.mode or settings.RETRIEVAL_MODE
+    rerank = settings.RERANK_ENABLED if request.rerank is None else request.rerank
     try:
-        query_vector = await asyncio.to_thread(embedder.embed_one, request.query)
+        result = await retrieve(
+            session, embedder, request.query, mode=mode, rerank=rerank, top_k=request.k
+        )
     except OpenAIError as exc:
         log.error("embedding_failed", error_type=type(exc).__name__, error=str(exc)[:400])
         raise HTTPException(status_code=500, detail="Embedding generation failed") from exc
 
-    distance = Chunk.embedding.cosine_distance(query_vector)
-    stmt = (
-        select(
-            Chunk.id,
-            Chunk.document_id,
-            Chunk.chunk_type,
-            Chunk.content,
-            Chunk.metadata_,
-            distance.label("distance"),
-        )
-        .order_by(distance)
-        .limit(request.k)
-    )
-    rows = (await session.execute(stmt)).all()
-
+    # Plain vector search has no fused/reranked score: the distance is the ordering signal.
+    scored = mode == "hybrid" or rerank
     return SearchResponse(
         query=request.query,
         k=request.k,
+        mode=mode,
+        reranked=rerank,
         search_time_ms=int((time.perf_counter() - started) * 1000),
+        timings_ms=result.timings_ms,
         results=[
             SearchResult(
-                chunk_id=row.id,
-                document_id=row.document_id,
-                chunk_type=row.chunk_type,
-                content=row.content,
-                distance=row.distance,
-                metadata=row.metadata_,
+                chunk_id=c.chunk_id,
+                document_id=c.document_id,
+                chunk_type=c.chunk_type,
+                content=c.content,
+                distance=c.distance,
+                score=c.score if scored else None,
+                metadata=c.metadata,
             )
-            for row in rows
+            for c in result.candidates
         ],
     )
