@@ -1,0 +1,362 @@
+{
+  "budgets": [
+    {
+      "budget_id": "BUD-2024-014",
+      "client_metadata": {
+        "sector": "fintech",
+        "country": "ES",
+        "company_size": "medium"
+      },
+      "project_summary": "Mobile banking app with instant transfers and card management",
+      "main_technology": "Flutter",
+      "year": 2024,
+      "total_estimated_hours": 1180,
+      "components": [
+        {
+          "component_id": "AUTH-001",
+          "name": "Authentication backend",
+          "description": "OAuth 2.0 and OpenID Connect login with refresh tokens, device binding and biometric re-authentication for retail banking customers.",
+          "tech_stack": [
+            "Node.js",
+            "PostgreSQL",
+            "Keycloak"
+          ],
+          "complexity": "high",
+          "estimated_hours": 220
+        },
+        {
+          "component_id": "PAY-002",
+          "name": "Instant transfers",
+          "description": "Real-time SEPA instant transfers with idempotency keys, limits per customer and fraud scoring hooks.",
+          "tech_stack": [
+            "Node.js",
+            "Kafka",
+            "PostgreSQL"
+          ],
+          "complexity": "high",
+          "estimated_hours": 360
+        },
+        {
+          "component_id": "CARD-003",
+          "name": "Card management",
+          "description": "Freeze, unfreeze and replace cards, view PIN securely and configure spending limits.",
+          "tech_stack": [
+            "Flutter",
+            "Node.js"
+          ],
+          "complexity": "medium",
+          "estimated_hours": 180
+        },
+        {
+          "component_id": "UI-004",
+          "name": "Mobile client",
+          "description": "Flutter client for iOS and Android with accessibility support and offline-friendly account overview.",
+          "tech_stack": [
+            "Flutter",
+            "Dart"
+          ],
+          "complexity": "medium",
+          "estimated_hours": 420
+        }
+      ]
+    },
+    {
+      "budget_id": "BUD-2023-087",
+      "client_metadata": {
+        "sector": "healthtech",
+        "country": "MX",
+        "company_size": "small"
+      },
+      "project_summary": "Patient scheduling and teleconsultation platform for private clinics",
+      "main_technology": "React",
+      "year": 2023,
+      "total_estimated_hours": 960,
+      "components": [
+        {
+          "component_id": "SCHED-001",
+          "name": "Appointment scheduling",
+          "description": "Calendar with doctor availability, automatic reminders by SMS and email, and rescheduling rules.",
+          "tech_stack": [
+            "React",
+            "Django",
+            "PostgreSQL"
+          ],
+          "complexity": "medium",
+          "estimated_hours": 240
+        },
+        {
+          "component_id": "VIDEO-002",
+          "name": "Teleconsultation",
+          "description": "Browser video calls between doctor and patient with waiting room and session recording consent.",
+          "tech_stack": [
+            "React",
+            "WebRTC",
+            "Twilio"
+          ],
+          "complexity": "high",
+          "estimated_hours": 320
+        },
+        {
+          "component_id": "EHR-003",
+          "name": "Medical records",
+          "description": "Structured patient records with role-based access, audit trail and export to PDF.",
+          "tech_stack": [
+            "Django",
+            "PostgreSQL"
+          ],
+          "complexity": "high",
+          "estimated_hours": 280
+        },
+        {
+          "component_id": "BILL-004",
+          "name": "Billing",
+          "description": "Invoicing per consultation with tax receipts and payment links.",
+          "tech_stack": [
+            "Django",
+            "Stripe"
+          ],
+          "complexity": "low",
+          "estimated_hours": 120
+        }
+      ]
+    },
+    {
+      "budget_id": "BUD-2024-031",
+      "client_metadata": {
+        "sector": "retail",
+        "country": "PE",
+        "company_size": "large"
+      },
+      "project_summary": "E-commerce storefront with loyalty program and inventory sync",
+      "main_technology": "Next.js",
+      "year": 2024,
+      "total_estimated_hours": 1340,
+      "components": [
+        {
+          "component_id": "CAT-001",
+          "name": "Product catalog",
+          "description": "Searchable catalog with faceted filters, variants and image optimisation.",
+          "tech_stack": [
+            "Next.js",
+            "Elasticsearch"
+          ],
+          "complexity": "medium",
+          "estimated_hours": 300
+        },
+        {
+          "component_id": "CART-002",
+          "name": "Checkout",
+          "description": "Cart, address book, multiple payment methods and order confirmation emails.",
+          "tech_stack": [
+            "Next.js",
+            "Node.js",
+            "Stripe"
+          ],
+          "complexity": "high",
+          "estimated_hours": 340
+        },
+        {
+          "component_id": "LOYAL-003",
+          "name": "Loyalty program",
+          "description": "Points accrual and redemption, tiers, and campaign rules configurable by marketing.",
+          "tech_stack": [
+            "Node.js",
+            "PostgreSQL"
+          ],
+          "complexity": "medium",
+          "estimated_hours": 260
+        },
+        {
+          "component_id": "INV-004",
+          "name": "Inventory sync",
+          "description": "Nightly and event-driven stock synchronisation with the warehouse ERP.",
+          "tech_stack": [
+            "Node.js",
+            "RabbitMQ"
+          ],
+          "complexity": "high",
+          "estimated_hours": 440
+        }
+      ]
+    },
+    {
+      "budget_id": "BUD-2022-052",
+      "client_metadata": {
+        "sector": "logistics",
+        "country": "CO",
+        "company_size": "medium"
+      },
+      "project_summary": "Fleet tracking and delivery route optimisation dashboard",
+      "main_technology": "Python",
+      "year": 2022,
+      "total_estimated_hours": 1100,
+      "components": [
+        {
+          "component_id": "TRACK-001",
+          "name": "Live vehicle tracking",
+          "description": "Ingestion of GPS telemetry from trucks with live map and geofence alerts.",
+          "tech_stack": [
+            "Python",
+            "FastAPI",
+            "Redis",
+            "Leaflet"
+          ],
+          "complexity": "high",
+          "estimated_hours": 360
+        },
+        {
+          "component_id": "ROUTE-002",
+          "name": "Route optimisation",
+          "description": "Daily route planning with time windows and capacity constraints using a vehicle routing solver.",
+          "tech_stack": [
+            "Python",
+            "OR-Tools"
+          ],
+          "complexity": "high",
+          "estimated_hours": 420
+        },
+        {
+          "component_id": "REPORT-003",
+          "name": "Operations reports",
+          "description": "Weekly delivery performance reports with on-time rate and cost per kilometre.",
+          "tech_stack": [
+            "Python",
+            "PostgreSQL",
+            "Metabase"
+          ],
+          "complexity": "low",
+          "estimated_hours": 140
+        },
+        {
+          "component_id": "AUTH-004",
+          "name": "Authentication backend",
+          "description": "JWT-based authorization service with roles for dispatchers, drivers and administrators.",
+          "tech_stack": [
+            "Python",
+            "FastAPI"
+          ],
+          "complexity": "medium",
+          "estimated_hours": 120
+        }
+      ]
+    },
+    {
+      "budget_id": "BUD-2023-019",
+      "client_metadata": {
+        "sector": "education",
+        "country": "ES",
+        "company_size": "small"
+      },
+      "project_summary": "Online learning platform with courses, quizzes and certificates",
+      "main_technology": "Vue.js",
+      "year": 2023,
+      "total_estimated_hours": 820,
+      "components": [
+        {
+          "component_id": "COURSE-001",
+          "name": "Course authoring",
+          "description": "Editor to create lessons with video, rich text and downloadable resources.",
+          "tech_stack": [
+            "Vue.js",
+            "Node.js",
+            "S3"
+          ],
+          "complexity": "medium",
+          "estimated_hours": 260
+        },
+        {
+          "component_id": "QUIZ-002",
+          "name": "Quizzes and grading",
+          "description": "Question banks, timed quizzes with automatic grading and attempt analytics.",
+          "tech_stack": [
+            "Vue.js",
+            "PostgreSQL"
+          ],
+          "complexity": "medium",
+          "estimated_hours": 220
+        },
+        {
+          "component_id": "CERT-003",
+          "name": "Certificates",
+          "description": "Automatic PDF certificates with verification codes after course completion.",
+          "tech_stack": [
+            "Node.js",
+            "PDFKit"
+          ],
+          "complexity": "low",
+          "estimated_hours": 90
+        },
+        {
+          "component_id": "SSO-004",
+          "name": "Single sign-on",
+          "description": "SAML single sign-on for university customers.",
+          "tech_stack": [
+            "Node.js",
+            "SAML"
+          ],
+          "complexity": "high",
+          "estimated_hours": 160
+        }
+      ]
+    },
+    {
+      "budget_id": "BUD-2024-066",
+      "client_metadata": {
+        "sector": "insurance",
+        "country": "MX",
+        "company_size": "large"
+      },
+      "project_summary": "Claims intake portal with document upload and automated triage",
+      "main_technology": "Angular",
+      "year": 2024,
+      "total_estimated_hours": 1250,
+      "components": [
+        {
+          "component_id": "INTAKE-001",
+          "name": "Claim intake form",
+          "description": "Multi-step claim submission with validation, draft saving and photo upload from mobile.",
+          "tech_stack": [
+            "Angular",
+            "Java",
+            "PostgreSQL"
+          ],
+          "complexity": "medium",
+          "estimated_hours": 280
+        },
+        {
+          "component_id": "OCR-002",
+          "name": "Document extraction",
+          "description": "OCR and field extraction from invoices and police reports with confidence scores.",
+          "tech_stack": [
+            "Python",
+            "Tesseract"
+          ],
+          "complexity": "high",
+          "estimated_hours": 380
+        },
+        {
+          "component_id": "TRIAGE-003",
+          "name": "Automated triage",
+          "description": "Rules and a classification model to route claims to adjusters by severity and fraud risk.",
+          "tech_stack": [
+            "Python",
+            "scikit-learn"
+          ],
+          "complexity": "high",
+          "estimated_hours": 340
+        },
+        {
+          "component_id": "NOTIF-004",
+          "name": "Customer notifications",
+          "description": "Status updates by email and WhatsApp throughout the claim lifecycle.",
+          "tech_stack": [
+            "Java",
+            "Twilio"
+          ],
+          "complexity": "low",
+          "estimated_hours": 100
+        }
+      ]
+    }
+  ]
+}

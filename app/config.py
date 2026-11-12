@@ -14,5 +14,9 @@ class Settings(BaseSettings):
 
     app_name: str = "Estimador CAG"
 
+    # Memoria de sesion: turnos (pares user+assistant) que se conservan en la ventana deslizante
+    max_turns: int = 6
+    max_attachment_bytes: int = 10 * 1024 * 1024
+
 
 settings = Settings()

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.config import settings
-from app.routers import estimations
+from app.routers import estimations, sessions
 
 app = FastAPI(
     title=settings.app_name,
@@ -13,6 +13,7 @@ app = FastAPI(
 )
 
 app.include_router(estimations.router, prefix="/api/v1")
+app.include_router(sessions.router, prefix="/api/v1")
 
 
 @app.get("/health")

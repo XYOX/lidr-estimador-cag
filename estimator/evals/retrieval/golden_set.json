@@ -1,0 +1,40 @@
+{
+  "description": "Hand-annotated relevance judgements. A chunk (budget component) is relevant if a developer estimating the query project would reuse it as a precedent. Judged against the full text of the 24 components in data/budgets_sample.json.",
+  "queries": [
+    {
+      "id": "ecommerce_loyalty",
+      "query": "Online store with a searchable product catalog, shopping cart checkout with card payments and a customer loyalty points program",
+      "relevant": ["BUD-2024-031::CAT-001", "BUD-2024-031::CART-002", "BUD-2024-031::LOYAL-003"],
+      "notes": "Payments distractors: BUD-2024-014::PAY-002 (instant bank transfers) and BUD-2023-087::BILL-004 (Stripe invoicing) are payment-related but not e-commerce."
+    },
+    {
+      "id": "mobile_banking",
+      "query": "Mobile banking app where customers log in with biometrics, freeze their cards and send instant transfers",
+      "relevant": [
+        "BUD-2024-014::AUTH-001",
+        "BUD-2024-014::PAY-002",
+        "BUD-2024-014::CARD-003",
+        "BUD-2024-014::UI-004"
+      ],
+      "notes": "Whole fintech budget is a precedent. Other auth components (AUTH-004 JWT, SSO-004 SAML) are distractors."
+    },
+    {
+      "id": "telehealth",
+      "query": "Telehealth platform for private clinics: doctors publish availability, patients book appointments with reminders and attend video consultations",
+      "relevant": ["BUD-2023-087::SCHED-001", "BUD-2023-087::VIDEO-002"],
+      "notes": "EHR-003 and BILL-004 are in the same budget but the query does not ask for records or billing."
+    },
+    {
+      "id": "jwt_rbac",
+      "query": "Authentication service issuing JWT tokens with role-based authorization for dispatchers, drivers and administrators",
+      "relevant": ["BUD-2022-052::AUTH-004", "BUD-2024-014::AUTH-001"],
+      "notes": "Exact-term query (JWT, roles). AUTH-001 covers tokens/refresh in a banking context; EHR-003 has role-based access but for patient records."
+    },
+    {
+      "id": "insurance_claims",
+      "query": "Insurance claims system that extracts data from uploaded invoices and police reports and automatically routes claims to adjusters by fraud risk",
+      "relevant": ["BUD-2024-066::OCR-002", "BUD-2024-066::TRIAGE-003", "BUD-2024-066::INTAKE-001"],
+      "notes": "NOTIF-004 (customer notifications) is in the same budget but not requested."
+    }
+  ]
+}
